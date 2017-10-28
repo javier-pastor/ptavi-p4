@@ -6,6 +6,8 @@ Clase (y programa principal) para un servidor de eco en UDP simple
 
 import socketserver
 import sys
+import time
+import json
 
 PORT = int(sys.argv[1])
 
@@ -43,9 +45,19 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
             if sec_expires == 0:
                 del self.addr_dic[addr]
 
-        print ("Diccionario de direcciones:\r\n"+str(self.addr_dic))
+        print ("Registro de direcciones:\r\n"+str(self.addr_dic))
+        self.register2json();
 
+    def register2json(self):
+        print("YEI!")
+        strings = time.strftime("%Y,%m,%d,%H,%M,%S")
+        t = strings.split(',')
+        numbers = [ int(x) for x in t ] # año mes dia hora minuto segundo 0 - 5
 
+        #nice = self.addr_dic + numbers
+
+        with open("registered.json", 'w') as file:
+            json.dump(self.addr_dic, file)
 
 
 if __name__ == "__main__":
@@ -54,6 +66,7 @@ if __name__ == "__main__":
     serv = socketserver.UDPServer(('', PORT), SIPRegisterHandler)
 
     print("Lanzando servidor UDP de eco...")
+
     try:
         serv.serve_forever()
     except KeyboardInterrupt:
