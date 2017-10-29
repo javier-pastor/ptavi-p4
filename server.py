@@ -32,7 +32,6 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
         while 1: # Read line by line what the client sent us
 
             line = self.rfile.read()
-            print(line)
             if not line:
                 break
             l_split = line.split()
@@ -59,9 +58,18 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
         self.json_dic[addr] = str(self.json_dic[addr]) + " expires: " + hour + " +" + str(sec_expires)
         #nice = self.addr_dic + numbers
 
-
         with open("registered.json", 'w') as file:
             json.dump(str(self.json_dic), file)
+
+        self.json2registered()
+
+    def json2registered(self):
+        try:
+            users = json.load(open('registered.json'))
+            print(users)
+        except:
+            print("El fichero no existe")
+
 
 
 if __name__ == "__main__":
